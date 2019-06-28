@@ -103,11 +103,11 @@ public class game {
     public static void nextGeneration(){
         //lastPopulation = (ArrayList<Player>)java.util.List.copyOf(population);
         Collections.sort(population);
-
         //We are assuming that the Current population is ranked in order of fitness, so we just take the top Players and breed them
         for(int i=0;i<breedingPairs;i++){
             population.remove(population.size()-1);
             //population.add(0,new Player(population.get(1),population.get(2),1));
+            //TODO:  This doesn't exactly work, because moves can get lost using this method, meaning I will have less than 9 chromosones.
             population.add(0,new Player(population.get(0),population.get(1),(int)(population.get(i).chromosone.size()*(Math.random()))));
         }
         //If we have a loser, kill him and replace with a Mutant.
