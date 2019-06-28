@@ -6,7 +6,7 @@ import java.util.Collections;
 public class game {
 
     static int generation = 0;
-    static int maxGenerations = 1000;
+    static int maxGenerations = 900;
     static int breedingPairs = 2;
     static int populationCapacity = 10;
     static ArrayList<Player> population = new ArrayList<>(populationCapacity);//Our current population of players.  We maintain 10 at a time.
@@ -25,7 +25,7 @@ public class game {
     After 100 generations, the Best Animal Player should be able to destroy the robo-player.
 
      */
-    public static void start(){
+    public static void start(int geneticPlayerNumber, Player opponentPlayer){
 
         int chaosWins = 0;
         int geneticWins =0;
@@ -34,30 +34,28 @@ public class game {
             population.add(new Player());
         }
         GENERATIONS: while(generation<maxGenerations){
-            nextGeneration();
+            nextGeneration(false);
             int generationWins = 0;
             int generationLosses = 0;
+            int opponentTurn = (geneticPlayerNumber+1)%2;
             System.out.println("Generation: "+generation);
             //Play a game for each player in the population.
             POPULATION: for (int i = 0; i < population.size(); i++) {
                 Board currentBoard = new Board();
                 Player[] players = new Player[2];
 
-                players[1] = new Player();
-                players[0] = population.get(i);
+                players[opponentTurn] = new Player();
+                players[geneticPlayerNumber] = population.get(i);
 
-                if (players[0].chromosone.size()<3){
+                if (players[0].chromosone.size()<9){
                     System.out.println("DEVIANT DETECTED");
                     break GENERATIONS;
                 }
 
                 while (currentBoard.isWon()<0 && currentBoard.moves<9){
-
                     for (int j = 0; j < players.length; j++) {
-
                         for (int k = 0; k < players[j].chromosone.size(); k++) {
                             if (currentBoard.tryMove(players[j].chromosone.get(k),j)){
-
                                 k=1000;
                             }
                         }
@@ -69,19 +67,19 @@ public class game {
                 if (currentBoard.isWon()==1){
                     chaosWins++;
                     //High scores are bad.
-                    players[0].fitnessScore=100;
+                    players[geneticPlayerNumber].fitnessScore=100;
                     generationLosses++;
                 }
                 //We won!
                 else if (currentBoard.isWon()==0) {
                     geneticWins++;
                     //A score of 5 means you won the game in 3 moves LIKE A FREAKING G
-                    players[0].fitnessScore=currentBoard.moves;
+                    players[geneticPlayerNumber].fitnessScore=currentBoard.moves;
                     generationWins++;
                 }
                 //If it ended in a tie.
                 else {
-                    players[0].fitnessScore=10;
+                    players[geneticPlayerNumber].fitnessScore=10;
                 }
                 //End of the game.  Evaluate Fitness of current player.
                 currentBoard.printBoard();
@@ -95,12 +93,12 @@ public class game {
         System.out.println("Genetic Player Wins: "+geneticWins);
         int totalMatches = (maxGenerations*populationCapacity);
         float nonLossPercent = (float)(totalMatches-chaosWins)/(float)totalMatches;
-        System.out.println("Percent not lost: "+nonLossPercent+"%");
+        System.out.println("Percent not lost: "+nonLossPercent+"%");//Completely random player can "not lose" 71% of the time if it goes first.
         System.out.println("Optimal Strategy: ");
         population.get(0).printChromosones();
     }
 
-    public static void nextGeneration(){
+    public static void nextGeneration(boolean addMutants){
         //lastPopulation = (ArrayList<Player>)java.util.List.copyOf(population);
         Collections.sort(population);
         //We are assuming that the Current population is ranked in order of fitness, so we just take the top Players and breed them
@@ -111,7 +109,7 @@ public class game {
             population.add(0,new Player(population.get(0),population.get(1),(int)(population.get(i).chromosone.size()*(Math.random()))));
         }
         //If we have a loser, kill him and replace with a Mutant.
-        if (population.get(population.size()-1).fitnessScore>=100 && generation < maxGenerations/2) {
+        if (addMutants && population.get(population.size()-1).fitnessScore>=100 && generation < maxGenerations/2) {
             population.remove(population.size() - 1);
             population.add(new Player());
         }

@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
 	// write your code here
         System.out.println("Beginning Simulation...");
-        game.start();
+        game.start(0,new Player());
         System.out.println("Simulation complete.");
     }
 }
