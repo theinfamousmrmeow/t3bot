@@ -8,7 +8,7 @@ public class game {
     static int generation = 0;
     static int maxGenerations = 1000;
     static int breedingPairs = 2;
-    static int populationCapacity = 20;
+    static int populationCapacity = 10;
     static ArrayList<Player> population = new ArrayList<>(populationCapacity);//Our current population of players.  We maintain 10 at a time.
     static ArrayList<Player> lastPopulation = new ArrayList<>(populationCapacity);
 
@@ -33,8 +33,8 @@ public class game {
         for (int i = 0; i < populationCapacity; i++) {
             population.add(new Player());
         }
-
         GENERATIONS: while(generation<maxGenerations){
+            nextGeneration();
             int generationWins = 0;
             int generationLosses = 0;
             System.out.println("Generation: "+generation);
@@ -76,7 +76,7 @@ public class game {
                 else if (currentBoard.isWon()==0) {
                     geneticWins++;
                     //A score of 5 means you won the game in 3 moves LIKE A FREAKING G
-                    players[0].fitnessScore=1;//currentBoard.moves;
+                    players[0].fitnessScore=currentBoard.moves;
                     generationWins++;
                 }
                 //If it ended in a tie.
@@ -88,7 +88,7 @@ public class game {
             }
             System.out.println("Generation Win Rate: "+generationWins+"/"+populationCapacity);
             System.out.println("Generation Loss Rate: "+generationLosses+"/"+populationCapacity);
-            nextGeneration();
+
         }
 
         System.out.println("Chaotic Player Wins: "+chaosWins);
@@ -96,6 +96,8 @@ public class game {
         int totalMatches = (maxGenerations*populationCapacity);
         float nonLossPercent = (float)(totalMatches-chaosWins)/(float)totalMatches;
         System.out.println("Percent not lost: "+nonLossPercent+"%");
+        System.out.println("Optimal Strategy: ");
+        population.get(0).printChromosones();
     }
 
     public static void nextGeneration(){
@@ -105,7 +107,8 @@ public class game {
         //We are assuming that the Current population is ranked in order of fitness, so we just take the top Players and breed them
         for(int i=0;i<breedingPairs;i++){
             population.remove(population.size()-1);
-            population.add(0,new Player(population.get(1),population.get(2),1));
+            //population.add(0,new Player(population.get(1),population.get(2),1));
+            population.add(0,new Player(population.get(0),population.get(1),(int)(population.get(i).chromosone.size()*(Math.random()))));
         }
         //If we have a loser, kill him and replace with a Mutant.
         if (population.get(population.size()-1).fitnessScore>=100 && generation < maxGenerations/2) {

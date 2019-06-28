@@ -35,6 +35,17 @@ public class Player implements Comparable<Player> {
         }
     }
 
+    public void printChromosones(){
+        Board example = new Board();
+        int i = 1;
+        for (Move m:chromosone) {
+            example.spaces[m.x][m.y]=i;
+            i++;
+        }
+        example.printBoard();
+    }
+
+
     @Override
     /**
      * Returns how much better or worse I am than the compared Player.
