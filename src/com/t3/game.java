@@ -6,7 +6,7 @@ import java.util.Collections;
 public class game {
 
     static int generation = 0;
-    static int maxGenerations = 900;
+    static int maxGenerations = 1000;
     static int breedingPairs = 2;
     static int populationCapacity = 10;
     static ArrayList<Player> population = new ArrayList<>(populationCapacity);//Our current population of players.  We maintain 10 at a time.
